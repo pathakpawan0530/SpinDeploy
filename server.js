@@ -4,10 +4,11 @@ const bodyParser = require('body-parser');
 const {SpinModel,SpinModelUserSet,LoginModel} = require("./model/SpinModel");
 const connectDB = require("./db/connection");
 const path = require("path");
+require('dotenv').config();
 
 // Create an Express app
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
