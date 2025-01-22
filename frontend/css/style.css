@@ -1,0 +1,238 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+body.body {
+  height: 100vh;
+  background: linear-gradient(135deg, #c3a3f1, #6414e9);
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative;
+}
+
+body.body:before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #00000045;
+  left: 0;
+  top: 0;
+  z-index: -1;
+}
+
+header {
+  padding: 15px 30px;
+  background: #8b35bc4f;
+  box-shadow: 0px 0px 10px 9px #b163dab5;
+  z-index: 9;
+  position: relative;
+}
+.logo {
+  text-transform: uppercase;
+  font-size: 22px;
+  color: #fff;
+  line-height: 24px;
+}
+.wrapper {
+  padding: 2em 3em 1em;
+  border-radius: 1em;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: top;
+}
+.container {
+  position: relative;
+  margin: auto;
+  width: 51%;
+}
+#wheel {
+  max-height: inherit;
+  width: inherit;
+  top: 0;
+  padding: 0;
+}
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+#spin-btn {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  height: 22%;
+  width: 22%;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 0;
+  background: radial-gradient(#fdcf3b 50%, #d88a40 85%);
+  color: #c66e16;
+  text-transform: uppercase;
+  font-size: .8em;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+#final-value {
+  font-size: 1.4em;
+  text-align: center;
+  margin-top: 1em;
+  color: #ffffff;
+  font-weight: 500;
+}
+.timer {
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  text-align: center;
+  color: #ffffff;
+  font-weight: 500;
+}
+.inputBox {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+.inputBox input.spinInput {
+  color: #000;
+  padding: 8px 11px;
+  border: 1px solid #919191;
+  border-radius: 5px 0px 0px 5px;
+}
+
+.inputBox button.btn {
+  padding: 4px 20px;
+  background: #8b35bc;
+  color: #fff;
+  border: 1px solid #8b35bc;
+  border-radius: 0px 5px 5px 0px;
+}
+button.btn.red{padding: 7px 20px;background: #ff0000;color: #fff;border: 1px solid #ff0000;border-radius: 2px;margin: auto;}
+.text-center{
+text-align: center;
+}
+#logInModal .btn{
+  padding: 5px 30px;
+  background-color: #8b35bc;
+  color: #fff;
+}
+.userIcon{
+  cursor: pointer;
+}
+.userIcon img {
+  width: 50px;
+}
+.headerInner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.infoSection {
+  padding-top: 2%;
+  width: 45%;
+}
+.formSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.timerSection {
+  width: 55%;
+}
+.recordTable {
+  margin-top: 25px;
+}
+.recordTable table {
+  width: 100%;
+  color: #fff;
+  border-collapse: collapse;
+}
+.recordTable table th{
+  background-color: #8b35bc;
+  font-size: 16px;
+  padding: 4px 20px;
+  text-transform: uppercase;
+}
+.recordTable table td, .recordTable table th {
+  width: 50%;
+  padding: 6px 20px;
+  border: 2px solid #b163da;
+  color: #fff;
+  font-size: 14px;
+}
+@media screen and (max-width: 768px) {
+  .recordTable table td, .recordTable table th{
+    text-align: center;
+  }
+  .userIcon img {
+    width: 30px;
+}
+  body.body{
+    background-size: cover;
+    height: auto;
+  }
+  body.body:before {
+    background: #00000099;
+  }
+  .inputBox {
+    margin-bottom: 15px;
+  }
+  .wrapper {
+    padding: 2em 1em 1em;
+    flex-direction: column-reverse;
+  }
+  .infoSection {
+    width: 100%;
+    margin-top: 30px;
+}
+.formSection {
+  flex-direction: column;
+}
+.timerSection {
+  width: 100%;
+}
+  .wrapper {
+    font-size: 12px;
+  }
+}
+
+div#loader {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: #26252589;
+  z-index: 99;
+  
+}
+div#loader div.inner {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+div#loader div.inner img {
+  width: 100px;
+  
+}
+footer {
+  position: fixed;
+  bottom: 0;
+  padding: 10px 20px;
+  color: #fff;
+  background: #8b35bc8a;
+  box-shadow: 0px 14px 10px 9px #b163dab5;
+  width: 100%;
+  font-size: 13px;
+  font-weight: 500;
+}
+footer p{
+  margin: 0;
+  text-align: center;
+
+}

@@ -1,0 +1,118 @@
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spin Wheel App</title>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"  crossorigin="anonymous">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body class="body" style="background-image: url(asset/bg2.jpg);">
+  <header>
+    <div class="headerInner">
+      <div class="logo">
+        Timer LOgo
+      </div>
+      <div class="userIcon">
+        <div data-bs-toggle="modal" id="userIconDiv" data-bs-target="#logInModal" data-bs-whatever="@mdo">
+          <img src="asset/user.png" />
+        </div>
+        <p id="LogOutBtn" style="color: white; cursor: pointer;">LogOut</p>
+      </div>
+    </div>
+  </header>
+  <div class="wrapper">
+    <div class="infoSection">
+      <div class="formSection">
+        <div class="inputBox">
+          <input class="spinInput" type="text" id="set-Val" placeholder="Set spin value..." />
+          <button class="btn" id="setValueBtn" type="button">submit</button>
+        </div>
+        <div class="text-center dltSave">
+          <button class="btn red" id="DltSpinVal" type="button">Delete Saved Value</button>
+        </div>
+      </div>
+      <div class="recordTable">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Spin Value</th>
+            </tr>
+          </thead>
+          <tbody id="main_tbl">
+           
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="timerSection">
+      <div class="timer" >
+        <p id="timer-display"></p>
+      </div>
+      <div class="container">
+        <div class="maindiv">
+          <canvas id="wheel" height="300"></canvas>
+          <button id="spin-btn">Spin</button>
+        </div>
+      </div>
+      <div id="final-value">
+        <p id="fVal"></p>
+      </div>
+    </div>
+
+  </div>
+
+  
+  <div class="modal fade" id="logInModal" tabindex="-1" aria-labelledby="logInModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logInModalLabel">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="email" class="col-form-label">Username</label>
+              <input type="email" class="form-control" autocomplete="off" id="email">
+            </div>
+            <div class="mb-3">
+              <label for="password" class="col-form-label">Password</label>
+              <input type="password" class="form-control" id="password" autocomplete="off">
+            </div>
+            <div class="text-end">
+              <button type="button" onclick="CheckLogin()" class="btn">Login Now</button>
+            </div>
+          </form>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>In some situations, our brain just can't make a decision, so why not let the wheel spinner making the small decision.
+      The wheel spinner will give you the fairest result by using the advanced algorithm behind it.    </p>
+  </footer>
+  <div id="loader">
+     <div class="inner">
+      <img  src="asset/loader.gif" />
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Chart JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <!-- Chart JS Plugin for displaying text over chart -->
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
+  <!-- Script -->
+  <script src="js/spinjs.js"></script>
+</body>
+
+</html>
