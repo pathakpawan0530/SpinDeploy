@@ -25,7 +25,7 @@ app.use(express.static(frontendPath));
 
 app.get("*", (req, res) => {
   res.sendFile(frontendPath);
-  res.status(200).send("OK");
+  res.status(200).send("ok");
 });
 
 app.get('/api/ValidUsers', async (req, res) => {
