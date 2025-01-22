@@ -25,6 +25,7 @@ app.use(express.static(frontendPath));
 
 app.get("*", (req, res) => {
   res.sendFile(frontendPath);
+  res.status(200).send("OK");
 });
 
 app.get('/api/ValidUsers', async (req, res) => {
@@ -211,6 +212,8 @@ app.get('/api/LastTimeValueSpinned', async (req, res) => {
 
 
 // Start the server
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
+
+server.setTimeout(300000);
