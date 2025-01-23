@@ -1,0 +1,27 @@
+name: Run Code Every 5 Minutes
+
+on:
+  schedule:
+    - cron: "*/1 * * * *"  # This runs the job every 5 minutes.
+  workflow_dispatch:  # Allow manual triggering as well
+
+jobs:
+  run:
+    runs-on: ubuntu-latest  # Specify the environment (Ubuntu is common)
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2  # Checks out your repository
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'  # You can set the Node version here
+
+      - name: Install Dependencies
+        run: |
+          npm install  # Install your dependencies (if you have a package.json)
+
+      - name: Run the Script
+        run: |
+          node server  # This should run your logic (e.g., spin wheel)
