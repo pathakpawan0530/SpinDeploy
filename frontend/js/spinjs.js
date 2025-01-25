@@ -330,11 +330,12 @@ function startTimer() {
       const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
       return `${formattedHours}:${minutes} ${period}`;
     };
+    var TargetTime  = minutes==30 || minutes==0;
   
     const interval = `${formatTime(blockStart)} to ${formatTime(blockEnd)}`;
   
     // Check if the interval is already in localStorage
-    if (!localStorage.getItem(interval)) {
+    if (!localStorage.getItem(interval) && TargetTime) {
       console.log(`Interval not found in localStorage: ${interval}`);
       
       // Call the API
