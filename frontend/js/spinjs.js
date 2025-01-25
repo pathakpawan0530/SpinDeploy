@@ -4,35 +4,35 @@ const finalValue = document.getElementById("fVal");
 const setValInput = document.getElementById("set-Val");
 const setValueBtn = document.getElementById("setValueBtn");
 const DltSpinVal = document.getElementById("DltSpinVal");
-const BackendURL='http://localhost:5000';
+const BackendURL = 'http://localhost:5000';
 
 
 
 
 document.addEventListener('DOMContentLoaded', function () {
-  
- $("#loader").hide();
+
+  $("#loader").hide();
   // Start the timer
   startTimer();
   fetchSpinValue();
   LastTimeValueSpinned()
-  if(localStorage.getItem("IsValid")){
+  if (localStorage.getItem("IsValid")) {
 
     $(".inputBox").show();
     $(".dltSave").show();
     $("#LogOutBtn").show();
     $("#userIconDiv").hide();
-    
-  }else{
+
+  } else {
     $(".inputBox").hide();
     $(".dltSave").hide();
     $("#LogOutBtn").hide();
     $("#userIconDiv").show();
-    
+
   }
 
-  
-  
+
+
 
   setValueBtn.addEventListener("click", () => {
     const value = parseInt(setValInput.value, 10);
@@ -48,10 +48,10 @@ document.addEventListener('DOMContentLoaded', function () {
       let startMinutes = currentTime.getMinutes() < 30 ? 0 : 30;
       let endHour = startMinutes === 0 ? startHour : startHour + 1;
       let endMinutes = startMinutes === 0 ? 30 : 0;
-    
+
       // Adjust end hour for the next day
       if (endHour === 24) endHour = 0;
-    
+
       // Format the times in HH:MM AM/PM
       const formatTime = (hour, minutes) => {
         const period = hour >= 12 ? "PM" : "AM";
@@ -59,12 +59,12 @@ document.addEventListener('DOMContentLoaded', function () {
         minutes = minutes.toString().padStart(2, '0');
         return `${hour}:${minutes} ${period}`;
       };
-    
+
       const interval = `${formatTime(startHour, startMinutes)} to ${formatTime(endHour, endMinutes)}`;
-    
 
 
-      setSpinValueToMongo(value,interval); // Save to MongoDB
+
+      setSpinValueToMongo(value, interval); // Save to MongoDB
       setValInput.value = "";
       Swal.fire({
         text: `Spin value ${value} set for this time interval`,
@@ -150,23 +150,23 @@ const valueGenerator = (angleValue) => {
       let currentTime = new Date();
       let hours = currentTime.getHours();
       let minutes = currentTime.getMinutes().toString().padStart(2, '0'); // Ensure two digits
-      
+
       // Determine AM/PM
       let period = hours >= 12 ? "PM" : "AM";
-      
+
       // Convert hours to 12-hour format
       hours = hours % 12 || 12; // Convert 0 to 12 for midnight and use 12-hour format
       hours = hours.toString().padStart(2, '0'); // Ensure two digits if needed
-      
+
       // Format as HH:MM AM/PM
       let interval = `${hours}:${minutes} ${period}`;
-      
-      
-      updateWheelColor(i.value);
-      SaveSpinVal(i.value,interval)
-      
 
-     
+
+      updateWheelColor(i.value);
+      SaveSpinVal(i.value, interval)
+
+
+
       myChart.data.datasets[0].backgroundColor = pieColors;
       myChart.update();
 
@@ -186,7 +186,7 @@ async function fetchSpinValue() {
     const spinValueList = await response.json();
     $("#loader").hide();
     console.log(spinValueList)
-    if(spinValueList.length>0){
+    if (spinValueList.length > 0) {
       BindIntoTable(spinValueList);
     }
   } catch (error) {
@@ -195,13 +195,13 @@ async function fetchSpinValue() {
 }
 
 
-async function setSpinValueToMongo(value,interval) {
+async function setSpinValueToMongo(value, interval) {
   try {
     $("#loader").show();
     const response = await fetch(`/api/spinValueUserSet`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ value,interval })
+      body: JSON.stringify({ value, interval })
     });
     $("#loader").hide();
     const data = await response.json();
@@ -217,20 +217,20 @@ const runTimer = (savedValue) => {
   let count = 0;
   let resultValue = 101;
 
-  if (savedValue!=0) {
-   
+  if (savedValue != 0) {
+
     resultValue = parseInt(savedValue, 10);
 
-  
+
     const minDegree = (resultValue - 1) * 36; // Start of the segment
     const maxDegree = resultValue * 36 - 1; // End of the segment
     randomDegree = Math.floor((minDegree + maxDegree) / 2); // Exact center of the range
   } else {
-   
+
     randomDegree = Math.floor(Math.random() * 360);
   }
 
-  
+
   const targetRotation = 360 * 15 + randomDegree; // 15 full rotations + target value
 
   let currentRotation = 0; // Track the current rotation
@@ -239,10 +239,10 @@ const runTimer = (savedValue) => {
 
   const rotationInterval = window.setInterval(() => {
     if (!slowingDown) {
-     
+
       currentRotation += spinSpeed;
     } else {
-      
+
       currentRotation += spinSpeed;
       spinSpeed *= 0.98; // Gradually reduce speed by 2% at each step
       if (spinSpeed < 1) {
@@ -250,7 +250,7 @@ const runTimer = (savedValue) => {
       }
     }
 
-  
+
     if (currentRotation >= targetRotation - 1080) {
       slowingDown = true;
     }
@@ -262,9 +262,9 @@ const runTimer = (savedValue) => {
       count = 0; // Reset count
       resultValue = 101; // Reset result value
 
-     
+
       setTimeout(() => {
-        
+
         startTimer();
       }, 2500);
     }
@@ -281,16 +281,16 @@ function startTimer() {
   let lastSpinCallTime = null; // To track when `fetchSpinValueFromApi` was last called
 
 
- pieColors = [
-  "#8b35bc", "#b163da", "#8b35bc", "#b163da", "#8b35bc", "#b163da",
-  "#8b35bc", "#b163da", "#8b35bc", "#b163da"
-];
-myChart.data.datasets[0].backgroundColor = pieColors;
+  pieColors = [
+    "#8b35bc", "#b163da", "#8b35bc", "#b163da", "#8b35bc", "#b163da",
+    "#8b35bc", "#b163da", "#8b35bc", "#b163da"
+  ];
+  myChart.data.datasets[0].backgroundColor = pieColors;
   function updateDisplay() {
-   
+
     const currentTime = new Date();
 
-  
+
     let hours = currentTime.getHours();
     let minutes = currentTime.getMinutes();
     let seconds = currentTime.getSeconds();
@@ -306,42 +306,67 @@ myChart.data.datasets[0].backgroundColor = pieColors;
     minutes = minutes < 10 ? "0" + minutes : minutes;
     seconds = seconds < 10 ? "0" + seconds : seconds;
 
-   
+
     timerDisplay.textContent = `${hours} : ${minutes} : ${seconds} ${period}`;
   }
 
 
   function runAtInterval() {
     const currentTime = new Date();
-    const currentMinutes = currentTime.getMinutes();
   
-
-    const isTargetTime =
-      (currentMinutes === 0 || currentMinutes === 30)
+    // Calculate the start and end of the current 30-minute interval
+    const minutes = currentTime.getMinutes();
+    const blockStartMinutes = minutes < 30 ? 0 : 30; // Either 0 or 30
+    const blockStart = new Date(currentTime);
+    blockStart.setMinutes(blockStartMinutes, 0, 0);
   
-    if (isTargetTime) {
-      fetchSpinValueFromApi();
+    const blockEnd = new Date(blockStart.getTime() + 30 * 60 * 1000);
+  
+    // Format the interval as "hh:mm AM/PM to hh:mm AM/PM"
+    const formatTime = (date) => {
+      const hours = date.getHours();
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const period = hours >= 12 ? "PM" : "AM";
+      const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
+      return `${formattedHours}:${minutes} ${period}`;
+    };
+  
+    const interval = `${formatTime(blockStart)} to ${formatTime(blockEnd)}`;
+  
+    // Check if the interval is already in localStorage
+    if (!localStorage.getItem(interval)) {
+      console.log(`Interval not found in localStorage: ${interval}`);
       
+      // Call the API
+      fetchSpinValueFromApi();
+  
+      // Add the interval to localStorage
+      localStorage.setItem(interval, 1);
+    } else {
+      console.log(`Interval already exists in localStorage: ${interval}`);
     }
-
   }
   
-// Helper function to start the interval exactly at the start of the next minute
-function startIntervalAtExactMinute() {
-  const currentTime = new Date();
-  const millisecondsUntilNextMinute =
-    60000 - (currentTime.getSeconds() * 1000 + currentTime.getMilliseconds());
-
-  setTimeout(() => {
-    runAtInterval(); // Run once immediately when the minute starts
-    setInterval(runAtInterval, 60000); // Then repeat every minute
-  }, millisecondsUntilNextMinute);
-}
-
-// Start the interval
-startIntervalAtExactMinute();
-  // setInterval(runAtInterval, 60000);
+  // Run the function every minute
+  setInterval(runAtInterval, 60000);
   
+
+  // Helper function to start the interval exactly at the start of the next minute
+  function startIntervalAtExactMinute() {
+    const currentTime = new Date();
+    const millisecondsUntilNextMinute =
+      60000 - (currentTime.getSeconds() * 1000 + currentTime.getMilliseconds());
+
+    setTimeout(() => {
+      runAtInterval(); // Run once immediately when the minute starts
+      setInterval(runAtInterval, 60000); // Then repeat every minute
+    }, millisecondsUntilNextMinute);
+  }
+
+  // Start the interval
+  startIntervalAtExactMinute();
+  // setInterval(runAtInterval, 60000);
+
   setInterval(updateDisplay, 1000);
 
 
@@ -351,10 +376,10 @@ startIntervalAtExactMinute();
 
 
 DltSpinVal.addEventListener('click', async () => {
- 
+
   const currentTime = new Date();
   const minutes = currentTime.getMinutes();
-  
+
 
   currentTime.setMinutes(minutes < 30 ? 0 : 30);
   currentTime.setSeconds(0);
@@ -362,7 +387,7 @@ DltSpinVal.addEventListener('click', async () => {
 
   const intervalStart = new Date(currentTime);
   const intervalEnd = new Date(currentTime);
-  
+
   intervalEnd.setMinutes(intervalEnd.getMinutes() + 30); // Add 30 minutes for the end time
 
 
@@ -413,14 +438,14 @@ async function fetchSpinValueFromApi() {
     const spinValues = await response.json();
     $("#loader").hide();
     if (spinValues && spinValues.length > 0) {
-    
+
       const latestSpin = spinValues[0]; // The most recent spin value
       const spinValue = latestSpin.value;
       console.log(spinValue)
       runTimer(spinValue);
-    }else{
+    } else {
       runTimer(0);
-    } 
+    }
   } catch (error) {
     console.error('Error fetching spin value:', error);
     runTimer(0);
@@ -428,27 +453,61 @@ async function fetchSpinValueFromApi() {
       icon: "error",
       text: "Error fetching spin value",
     });
-    
+
   }
 }
 
-async function SaveSpinVal(value,interval){
-  try{
+async function SaveSpinVal(value, interval) {
+  try {
     $("#loader").show();
     const response = await fetch(`/api/spinValue`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ value,interval })
+      body: JSON.stringify({ value, interval })
     });
     $("#loader").hide();
     var result = await response.json();
 
-    if (result.statuscode==200) {
+    if (result.statuscode == 200) {
+
+      const currentTime = new Date();
+
+      // Calculate the start of the current or next 30-minute block
+      const minutes = currentTime.getMinutes();
+      const blockStartMinutes = minutes < 30 ? 30 : 0; // Forward to 30 or 0 of the next hour
+      const blockStart = new Date(currentTime);
+
+      // Adjust the hour if moving to the next hour
+      if (blockStartMinutes === 0 && minutes >= 30) {
+        blockStart.setHours(blockStart.getHours() + 1);
+      }
+      blockStart.setMinutes(blockStartMinutes, 0, 0);
+
+      // Calculate the end of the 30-minute block
+      const blockEnd = new Date(blockStart.getTime() + 30 * 60 * 1000);
+
+      // Format the start and end times as "hh:mm AM/PM"
+      const formatTime = (date) => {
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const period = hours >= 12 ? "PM" : "AM";
+        const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
+        return `${formattedHours}:${minutes} ${period}`;
+      };
+
+      const interval = `${formatTime(blockStart)} to ${formatTime(blockEnd)}`;
+
+      // Save the interval as the key and set value to 1 in localStorage
+      localStorage.setItem(interval, 1);
+
+      // Call function to fetch updated spin values
       fetchSpinValue();
+
+
 
     }
 
-  }catch(error){
+  } catch (error) {
     console.error('Error fetching spin value:', error);
     Swal.fire({
       icon: "error",
@@ -474,7 +533,7 @@ const CheckLogin = async () => {
           text: "User logged in successfully.",
         });
         var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('logInModal'));
-         myModal.hide();
+        myModal.hide();
         localStorage.setItem("IsValid", "1");
         $(".inputBox").show();
         $(".dltSave").show();
@@ -502,47 +561,47 @@ const CheckLogin = async () => {
   }
 };
 
-LogOutBtn.addEventListener("click",()=>{
+LogOutBtn.addEventListener("click", () => {
   localStorage.clear();
   $(".inputBox").hide();
   $(".dltSave").hide();
   $("#userIconDiv").show();
   $("#dltSave").hide();
   $("#LogOutBtn").hide();
-  
-  
-  
+
+
+
   Swal.fire({
     icon: "success",
     text: "LogOut Successfully.",
   });
 })
 
-const BindIntoTable = (SpiValList)=>{
-var dhtml ="";
-const currentDate = new Date().getDate(); // Get today's date (day of the month)
+const BindIntoTable = (SpiValList) => {
+  var dhtml = "";
+  const currentDate = new Date().getDate(); // Get today's date (day of the month)
 
-// Filter data for the current day only
-var filteredData = SpiValList.filter(val => {
-  const recordDate = new Date(val.timestamp).getDate(); 
-  return recordDate === currentDate; 
-});
-var main_tbl= $("#main_tbl");
-main_tbl.empty();
-filteredData.forEach(element => {
-  dhtml+="<tr>"
-dhtml+=`<td>${element.interval}</td>`
-dhtml+=`<td>${element.value}</td>`
-dhtml+="</tr>"
+  // Filter data for the current day only
+  var filteredData = SpiValList.filter(val => {
+    const recordDate = new Date(val.timestamp).getDate();
+    return recordDate === currentDate;
+  });
+  var main_tbl = $("#main_tbl");
+  main_tbl.empty();
+  filteredData.forEach(element => {
+    dhtml += "<tr>"
+    dhtml += `<td>${element.interval}</td>`
+    dhtml += `<td>${element.value}</td>`
+    dhtml += "</tr>"
 
-});
+  });
 
-main_tbl.append(dhtml);
+  main_tbl.append(dhtml);
 
 }
 
-const LastTimeValueSpinned =  async()=>{
-  try{
+const LastTimeValueSpinned = async () => {
+  try {
     $("#loader").show();
     var response = await fetch(`api/LastTimeValueSpinned`);
     var res_Json = await response.json();
@@ -550,16 +609,16 @@ const LastTimeValueSpinned =  async()=>{
     $("#loader").hide();
     UpdateLastTime(res_Json);
 
-    }catch(error){
-    console.log("LastTimeValueSpinned: "  + error )
+  } catch (error) {
+    console.log("LastTimeValueSpinned: " + error)
   }
 
 }
 
-const UpdateLastTime = (LastTimeValueSpinned)=>{
+const UpdateLastTime = (LastTimeValueSpinned) => {
 
   finalValue.innerHTML = `Last spinned Value is: ${LastTimeValueSpinned.value}`;
-     
+
   updateWheelColor(LastTimeValueSpinned.value);
   myChart.data.datasets[0].backgroundColor = pieColors;
   myChart.update();
