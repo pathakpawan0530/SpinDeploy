@@ -314,7 +314,7 @@ function startTimer() {
   function runAtInterval() {
     const currentTime = new Date();
     const minutes = currentTime.getMinutes();
-    const targetTimes = [0,  30]; // Define target times
+    const targetTimes = [0,  30,10,20,40,50]; // Define target times
   
     if (targetTimes.includes(minutes)) {
       console.log(`API called at ${currentTime.toLocaleTimeString()}`);
@@ -559,4 +559,5 @@ const UpdateLastTime = (LastTimeValueSpinned) => {
   myChart.data.datasets[0].backgroundColor = pieColors;
   myChart.update();
 }
+
 
