@@ -5,6 +5,13 @@ const {SpinModel,SpinModelUserSet,LoginModel} = require("./model/SpinModel");
 const connectDB = require("./db/connection");
 const path = require("path");
 require('dotenv').config();
+const fs = require('fs');
+
+
+cron.schedule('*/5 * * * *', () => {
+  const timestamp = new Date().toISOString();
+  fs.appendFileSync('cron.log', `Task executed at: ${timestamp}\n`);
+});
 
 // Create an Express app
 const app = express();
