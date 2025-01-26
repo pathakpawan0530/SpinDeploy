@@ -8,12 +8,27 @@ require('dotenv').config();
 const fs = require('fs');
 const cron = require('node-cron');
 
+// Format the timestamp to a readable datetime
+function getReadableTimestamp() {
+  const now = new Date();
+  return now.toLocaleString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric', 
+    hour: 'numeric', 
+    minute: 'numeric', 
+    second: 'numeric', 
+    hour12: true 
+  });
+}
 
-
-cron.schedule('*/5 * * * *', () => {
-  const timestamp = new Date().toISOString();
+cron.schedule('* * * * *', () => {
+  const timestamp = getReadableTimestamp();
   fs.appendFileSync('cron.log', `Task executed at: ${timestamp}\n`);
 });
+
+
 
 // Create an Express app
 const app = express();
