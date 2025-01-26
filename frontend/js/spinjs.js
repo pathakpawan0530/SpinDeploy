@@ -313,60 +313,30 @@ function startTimer() {
 
   function runAtInterval() {
     const currentTime = new Date();
-  
-    // Calculate the start and end of the current 30-minute interval
     const minutes = currentTime.getMinutes();
-    const blockStartMinutes = minutes < 30 ? 0 : 30; // Either 0 or 30
-    const blockStart = new Date(currentTime);
-    blockStart.setMinutes(blockStartMinutes, 0, 0);
+    const targetTimes = [0,  30]; // Define target times
   
-    const blockEnd = new Date(blockStart.getTime() + 30 * 60 * 1000);
-  
-    // Format the interval as "hh:mm AM/PM to hh:mm AM/PM"
-    const formatTime = (date) => {
-      const hours = date.getHours();
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-      const period = hours >= 12 ? "PM" : "AM";
-      const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
-      return `${formattedHours}:${minutes} ${period}`;
-    };
-    var TargetTime  = minutes==30 || minutes==0;
-  
-    const interval = `${formatTime(blockStart)} to ${formatTime(blockEnd)}`;
-  
-    // Check if the interval is already in localStorage
-    if (!localStorage.getItem(interval) && TargetTime) {
-      console.log(`Interval not found in localStorage: ${interval}`);
-      
+    if (targetTimes.includes(minutes)) {
+      console.log(`API called at ${currentTime.toLocaleTimeString()}`);
       // Call the API
       fetchSpinValueFromApi();
-  
-      // Add the interval to localStorage
-      localStorage.setItem(interval, 1);
-    } else {
-      console.log(`Interval already exists in localStorage: ${interval}`);
     }
   }
   
-  // Run the function every minute
-  setInterval(runAtInterval, 60000);
+  function alignToRealTime() {
+    const now = new Date();
+    const secondsUntilNextMinute = 60 - now.getSeconds(); // Calculate seconds to align with the next minute
   
-
-  // Helper function to start the interval exactly at the start of the next minute
-  function startIntervalAtExactMinute() {
-    const currentTime = new Date();
-    const millisecondsUntilNextMinute =
-      60000 - (currentTime.getSeconds() * 1000 + currentTime.getMilliseconds());
-
+    // Align to the next minute
     setTimeout(() => {
-      runAtInterval(); // Run once immediately when the minute starts
-      setInterval(runAtInterval, 60000); // Then repeat every minute
-    }, millisecondsUntilNextMinute);
+      setInterval(runAtInterval, 60000); // Start interval after alignment
+      // runAtInterval(); // Call immediately to cover the current interval
+    }, secondsUntilNextMinute * 1000);
   }
-
-  // Start the interval
-  startIntervalAtExactMinute();
-  // setInterval(runAtInterval, 60000);
+  
+  // Start the process
+  alignToRealTime();
+   
 
   setInterval(updateDisplay, 1000);
 
@@ -470,42 +440,7 @@ async function SaveSpinVal(value, interval) {
     var result = await response.json();
 
     if (result.statuscode == 200) {
-
-      const currentTime = new Date();
-
-      // Calculate the start of the current or next 30-minute block
-      const minutes = currentTime.getMinutes();
-      const blockStartMinutes = minutes < 30 ? 30 : 0; // Forward to 30 or 0 of the next hour
-      const blockStart = new Date(currentTime);
-
-      // Adjust the hour if moving to the next hour
-      if (blockStartMinutes === 0 && minutes >= 30) {
-        blockStart.setHours(blockStart.getHours() + 1);
-      }
-      blockStart.setMinutes(blockStartMinutes, 0, 0);
-
-      // Calculate the end of the 30-minute block
-      const blockEnd = new Date(blockStart.getTime() + 30 * 60 * 1000);
-
-      // Format the start and end times as "hh:mm AM/PM"
-      const formatTime = (date) => {
-        const hours = date.getHours();
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        const period = hours >= 12 ? "PM" : "AM";
-        const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
-        return `${formattedHours}:${minutes} ${period}`;
-      };
-
-      const interval = `${formatTime(blockStart)} to ${formatTime(blockEnd)}`;
-
-      // Save the interval as the key and set value to 1 in localStorage
-      localStorage.setItem(interval, 1);
-
-      // Call function to fetch updated spin values
       fetchSpinValue();
-
-
-
     }
 
   } catch (error) {

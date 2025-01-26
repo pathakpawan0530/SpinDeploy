@@ -82,27 +82,46 @@ app.get('/api/spinValue', async (req, res) => {
   }
 });
 
-
 app.post('/api/spinValue', async (req, res) => {
-  const { value,interval } = req.body;
+  const { value, interval } = req.body;
+
+  // Validate the value range
   if (value < 1 || value > 10) {
     return res.status(400).send('Please provide a value between 1 and 10.');
   }
 
   try {
+    // Get the current date in YYYY-MM-DD format
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0)); // Start of the current day
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999)); // End of the current day
+
+    // Check if a record exists for the same interval within today's date
+    const existingRecord = await SpinModel.findOne({
+      interval,
+      timestamp: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    if (existingRecord) {
+      return res.status(400).send(`Spin value for interval "${interval}" is already posted today.`);
+    }
+
     // Save the spin value along with the timestamp
     const newSpinValue = new SpinModel({
       value,
       interval,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
-    console.log(newSpinValue)
+
     await newSpinValue.save();
-    res.status(200).json({statuscode:200});
+    console.log(newSpinValue);
+
+    res.status(200).json({ statuscode: 200, message: 'Spin value saved successfully.' });
   } catch (error) {
-    res.status(500).send(`Error saving spin value: ${error}`);
+    res.status(500).send(`Error saving spin value: ${error.message}`);
   }
 });
+
 
 
 

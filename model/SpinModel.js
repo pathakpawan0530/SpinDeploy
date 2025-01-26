@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 // Define the schema to include value and timestamp
 const spinSchema = new mongoose.Schema({
   value: { type: Number, required: true },
-  interval: {type:String, required: true},
+  interval: {type:String, required: true,unique:true},
   timestamp: { type: Date, default: Date.now }
 });
 
