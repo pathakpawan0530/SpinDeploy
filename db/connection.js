@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 // MongoDB connection URI
-const mongoURI = `mongodb+srv://${process.env.USERID}:${process.env.PASSWORD}@192.241.138.16:5000/spinWheelCollection`;
+const mongoURI = `mongodb+srv://${process.env.USERID}:${process.env.PASSWORD}@cluster0.11fy4.mongodb.net/spinWheelCollection`;
 
 // Function to connect to MongoDB using Mongoose
 const connectDB = async () => {
