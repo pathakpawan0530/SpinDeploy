@@ -92,6 +92,7 @@ app.post('/api/spinValue', async (req, res) => {
   if (value < 1 || value > 10) {
     return res.status(400).send('Please provide a value between 1 and 10.');
   }
+
   const intervalRegex = /^\d{1,2}:(00|10|20|30|40|50)\s(?:AM|PM)$/;
   if (!intervalRegex.test(interval)) {
     return res.status(400).send('Interval must be in HH:MM AM/PM format with MM as 00, 10, 20, 30, 40, or 50.');
@@ -100,8 +101,15 @@ app.post('/api/spinValue', async (req, res) => {
   try {
     // Get the current date in YYYY-MM-DD format
     const today = new Date();
+    
+    // Create new instances to avoid mutating the 'today' object
     const startOfDay = new Date(today.setHours(0, 0, 0, 0)); // Start of the current day
     const endOfDay = new Date(today.setHours(23, 59, 59, 999)); // End of the current day
+    
+    // Reset the today object to prevent mutation in future use
+    today.setHours(12, 0, 0, 0);
+
+ 
 
     // Check if a record exists for the same interval within today's date
     const existingRecord = await SpinModel.findOne({
@@ -128,6 +136,7 @@ app.post('/api/spinValue', async (req, res) => {
     res.status(500).send(`Error saving spin value: ${error.message}`);
   }
 });
+
 
 
 
