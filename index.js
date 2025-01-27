@@ -234,19 +234,22 @@ app.get('/api/LastTimeValueSpinned', async (req, res) => {
 // Function to call the API
 async function RunInBackend() {
   const apiEndpoint = `http://localhost:${port}/api/spinValue`; // Adjust as needed
+  const localTime = new Date().toLocaleString('en-US', {
+    timeZone: 'Asia/Kolkata', // Replace with your local timezone
+  });
   const payload = {
     value: Math.floor(Math.random() * 10) + 1, // Random value between 1 and 10
-    interval: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+    interval: localTime,
   };
 
   try {
     const response = await axios.post(apiEndpoint, payload);
-    console.log("Pawan");
-    console.log(`API Response at ${new Date().toISOString()}:`, response.data);
+    console.log(`API Response at ${localTime}:`, response.data);
   } catch (error) {
-    console.error(`Error calling API at ${new Date().toISOString()}:`, error.message);
+    console.error(`Error calling API at ${localTime}:`, error.message);
   }
 }
+
 
 function runAtInterval() {
   const currentTime = new Date();
