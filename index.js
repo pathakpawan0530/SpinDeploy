@@ -92,6 +92,10 @@ app.post('/api/spinValue', async (req, res) => {
   if (value < 1 || value > 10) {
     return res.status(400).send('Please provide a value between 1 and 10.');
   }
+  const intervalRegex = /^\d{1,2}:(00|10|20|30|40|50)\s(?:AM|PM)$/;
+  if (!intervalRegex.test(interval)) {
+    return res.status(400).send('Interval must be in HH:MM AM/PM format with MM as 00, 10, 20, 30, 40, or 50.');
+  }
 
   try {
     // Get the current date in YYYY-MM-DD format
@@ -234,12 +238,16 @@ app.get('/api/LastTimeValueSpinned', async (req, res) => {
 // Function to call the API
 async function RunInBackend() {
   const apiEndpoint = `http://localhost:${port}/api/spinValue`; // Adjust as needed
-  const localTime = new Date().toLocaleString('en-US', {
-    timeZone: 'Asia/Kolkata', // Replace with your local timezone
+  const localTime = new Date().toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true, // Ensures AM/PM format
+    timeZone: 'Asia/Kolkata', // Replace with your local timezone if needed
   });
+
   const payload = {
     value: Math.floor(Math.random() * 10) + 1, // Random value between 1 and 10
-    interval: localTime,
+    interval: localTime, // HH:MM AM/PM format
   };
 
   try {
