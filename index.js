@@ -70,7 +70,7 @@ app.get('/api/spinValueUserSet', async (req, res) => {
 
   res.json(spinValues);  // Send all records as the response
   } catch (error) {
-    res.status(500).send('Error retrieving spin value');
+    res.status(500).send({message:'Error while fetching.'});
   }
 });
 
@@ -87,10 +87,11 @@ app.get('/api/spinValue', async (req, res) => {
 
 app.post('/api/spinValue', async (req, res) => {
   const { value, interval } = req.body;
-
   // Validate the value range
   if (value < 1 || value > 10) {
-    return res.status(400).send('Please provide a value between 1 and 10.');
+    return res.status(400).send({
+      error: 'Please provide a value between 1 and 10..'
+    });
   }
 
   const intervalRegex = /^\d{1,2}:(00|10|20|30|40|50)\s(?:AM|PM)$/;
@@ -148,7 +149,7 @@ app.post('/api/spinValueUserSet', async (req, res) => {
   const { value,interval } = req.body;
 
   if (value < 1 || value > 10) {
-    return res.status(400).send('Please provide a value between 1 and 10.');
+    return res.status(400).send({message:'Please provide a value between 1 and 10.'});
   }
 
   try {
@@ -161,7 +162,7 @@ app.post('/api/spinValueUserSet', async (req, res) => {
     await newSpinValue.save();
     res.status(200).json(newSpinValue);
   } catch (error) {
-    res.status(500).send(`Error saving spin value: ${error}`);
+    res.status(500).send({message:`Error saving spin value: ${error}`});
   }
 });
 
@@ -193,8 +194,7 @@ app.post('/api/deleteSpinValue', async (req, res) => {
 });
 
 
-//make Users
-// API to create a new user
+
 app.post('/api/createUser', async (req, res) => {
   const { UserID, Password } = req.body;
 
@@ -274,7 +274,7 @@ async function RunInBackend(UserSetValue) {
 function runAtInterval() {
   const currentTime = new Date();
   const minutes = currentTime.getMinutes();
-  const targetTimes = [0,  30]; // Define target times
+  const targetTimes = [0,30]; // Define target times
 
   if (targetTimes.includes(minutes)) {
     console.log(`API called at ${currentTime.toLocaleTimeString()}`);
@@ -286,10 +286,9 @@ function runAtInterval() {
 
 async function fetchSpinValueFromApi() {
   try {
-    $("#loader").show();
     const apiEndpoint = `http://localhost:${port}/api/spinValueUserSet`; // Adjust as needed
-    const response = await axios.get(apiEndpoint);
-    const spinValues = await response.json();
+    var response = await axios.get(apiEndpoint);
+    var spinValues = await response.json();
 
     if (spinValues && spinValues.length > 0) {
 
@@ -302,11 +301,8 @@ async function fetchSpinValueFromApi() {
     }
   } catch (error) {
     console.error('Error fetching spin value:', error);
-    runTimer(0);
-    Swal.fire({
-      icon: "error",
-      text: "Error fetching spin value",
-    });
+    RunInBackend(0);
+
 
   }
 }
