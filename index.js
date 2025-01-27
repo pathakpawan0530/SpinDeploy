@@ -245,7 +245,7 @@ app.get('/api/LastTimeValueSpinned', async (req, res) => {
 // ----Cron
 
 // Function to call the API
-async function RunInBackend() {
+async function RunInBackend(UserSetValue) {
   const apiEndpoint = `http://localhost:${port}/api/spinValue`; // Adjust as needed
   const localTime = new Date().toLocaleTimeString('en-US', {
     hour: '2-digit',
@@ -255,7 +255,7 @@ async function RunInBackend() {
   });
 
   const payload = {
-    value: Math.floor(Math.random() * 10) + 1, // Random value between 1 and 10
+    value: UserSetValue!=0 ? UserSetValue: Math.floor(Math.random() * 10) + 1, // Random value between 1 and 10
     interval: localTime, // HH:MM AM/PM format
   };
 
@@ -271,14 +271,43 @@ async function RunInBackend() {
 function runAtInterval() {
   const currentTime = new Date();
   const minutes = currentTime.getMinutes();
-  const targetTimes = [0,  30,10,20,40,50]; // Define target times
+  const targetTimes = [0,  30]; // Define target times
 
   if (targetTimes.includes(minutes)) {
     console.log(`API called at ${currentTime.toLocaleTimeString()}`);
     // Call the API
-    RunInBackend();
+    fetchSpinValueFromApi();
   }
 }
+
+
+async function fetchSpinValueFromApi() {
+  try {
+    $("#loader").show();
+    const apiEndpoint = `http://localhost:${port}/api/spinValueUserSet`; // Adjust as needed
+    const response = await axios.get(apiEndpoint);
+    const spinValues = await response.json();
+
+    if (spinValues && spinValues.length > 0) {
+
+      const latestSpin = spinValues[0]; // The most recent spin value
+      const spinValue = latestSpin.value;
+      console.log(spinValue)
+      RunInBackend(spinValue);
+    } else {
+      RunInBackend(0);
+    }
+  } catch (error) {
+    console.error('Error fetching spin value:', error);
+    runTimer(0);
+    Swal.fire({
+      icon: "error",
+      text: "Error fetching spin value",
+    });
+
+  }
+}
+
 
 // Function to align the next interval at a real-time 30-minute mark
 function alignToRealTime() {
