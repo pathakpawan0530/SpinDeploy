@@ -3,31 +3,10 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const {SpinModel,SpinModelUserSet,LoginModel} = require("./model/SpinModel");
 const connectDB = require("./db/connection");
+const axios = require('axios');
+
 const path = require("path");
 require('dotenv').config();
-const fs = require('fs');
-const cron = require('node-cron');
-
-// Format the timestamp to a readable datetime
-function getReadableTimestamp() {
-  const now = new Date();
-  return now.toLocaleString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric', 
-    hour: 'numeric', 
-    minute: 'numeric', 
-    second: 'numeric', 
-    hour12: true 
-  });
-}
-
-cron.schedule('* * * * *', () => {
-  const timestamp = getReadableTimestamp();
-  fs.appendFileSync('cron.log', `Task executed at: ${timestamp}\n`);
-});
-
 
 
 // Create an Express app
@@ -250,6 +229,49 @@ app.get('/api/LastTimeValueSpinned', async (req, res) => {
     res.status(500).send('Error retrieving spin value');
   }
 });
+// ----Cron
+
+// Function to call the API
+async function RunInBackend() {
+  const apiEndpoint = `http://localhost:${port}/api/spinValue`; // Adjust as needed
+  const payload = {
+    value: Math.floor(Math.random() * 10) + 1, // Random value between 1 and 10
+    interval: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+  };
+
+  try {
+    const response = await axios.post(apiEndpoint, payload);
+    console.log("Pawan");
+    console.log(`API Response at ${new Date().toISOString()}:`, response.data);
+  } catch (error) {
+    console.error(`Error calling API at ${new Date().toISOString()}:`, error.message);
+  }
+}
+
+function runAtInterval() {
+  const currentTime = new Date();
+  const minutes = currentTime.getMinutes();
+  const targetTimes = [0,  30,10,20,40,50]; // Define target times
+
+  if (targetTimes.includes(minutes)) {
+    console.log(`API called at ${currentTime.toLocaleTimeString()}`);
+    // Call the API
+    RunInBackend();
+  }
+}
+
+// Function to align the next interval at a real-time 30-minute mark
+function alignToRealTime() {
+  const now = new Date();
+    const secondsUntilNextMinute = 60 - now.getSeconds(); // Calculate seconds to align with the next minute
+  
+    // Align to the next minute
+    setTimeout(() => {
+      setInterval(runAtInterval, 60000); // Start interval after alignment
+    }, secondsUntilNextMinute * 1000);
+  }
+// Start the process
+alignToRealTime();
 
 
 
