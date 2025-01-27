@@ -95,8 +95,9 @@ app.post('/api/spinValue', async (req, res) => {
 
   const intervalRegex = /^\d{1,2}:(00|10|20|30|40|50)\s(?:AM|PM)$/;
   if (!intervalRegex.test(interval)) {
-    return res.status(400).send('Interval must be in HH:MM AM/PM format with MM as 00, 10, 20, 30, 40, or 50.');
-  }
+    return res.status(400).json({
+      error: 'Interval must be in HH:MM AM/PM format with MM as 00, 10, 20, 30, 40, or 50.'
+    });  }
 
   try {
     // Get the current date in YYYY-MM-DD format
@@ -118,8 +119,10 @@ app.post('/api/spinValue', async (req, res) => {
     });
 
     if (existingRecord) {
-      return res.status(400).send(`Spin value for interval "${interval}" is already posted today.`);
-    }
+      return res.status(400).json({
+        error: `Spin value for interval "${interval}" is already posted today.`
+      });
+          }
 
     // Save the spin value along with the timestamp
     const newSpinValue = new SpinModel({
