@@ -295,7 +295,7 @@ async function fetchSpinValueFromApi() {
   try {
     const apiEndpoint = `http://localhost:${port}/api/spinValueUserSet`; // Adjust as needed
     var response = await axios.get(apiEndpoint);
-    var spinValues = await response.json();
+    var spinValues = response.data; // ✅ Correct way to get JSON from axios response
 
     if (spinValues && spinValues.length > 0) {
 
