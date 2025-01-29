@@ -300,40 +300,39 @@ function runAtInterval() {
 
 async function fetchSpinValueFromApi() {
   try {
-    const apiEndpoint = `http://localhost:${port}/api/spinValueUserSet`;
-    const response = await axios.get(apiEndpoint);
-    const spinValues = response.data;
-
-    let spinValue = 0; // Default to 0 if no values found
+    const apiEndpoint = `http://localhost:${port}/api/spinValueUserSet`; // Adjust as needed
+    var response = await axios.get(apiEndpoint);
+    var spinValues = response.data; // ✅ Correct way to get JSON from axios response
 
     if (spinValues && spinValues.length > 0) {
-      spinValue = spinValues[0].value; // Get the most recent spin value
-    }
 
-    console.log("Calling RunInBackend with:", spinValue);
-    RunInBackend(spinValue); // Call RunInBackend only once
+      const latestSpin = spinValues[0]; // The most recent spin value
+      const spinValue = latestSpin.value;
+      console.log(spinValue)
+      RunInBackend(spinValue);
+    } else {
+      RunInBackend(0);
+    }
   } catch (error) {
     console.error('Error fetching spin value:', error);
-    RunInBackend(0); // Call only if needed
+    RunInBackend(0);
+
+
   }
 }
 
 
-let intervalRunning = false; // Prevent multiple intervals
-
+// Function to align the next interval at a real-time 30-minute mark
 function alignToRealTime() {
-  if (intervalRunning) return; // Prevent multiple intervals
-
   const now = new Date();
-  const secondsUntilNextMinute = 60 - now.getSeconds();
-
-  setTimeout(() => {
-    setInterval(runAtInterval, 60000); // Run every minute
-  }, secondsUntilNextMinute * 1000);
-
-  intervalRunning = true;
-}
-
+    const secondsUntilNextMinute = 60 - now.getSeconds(); // Calculate seconds to align with the next minute
+  
+    // Align to the next minute
+    setTimeout(() => {
+      setInterval(runAtInterval, 60000); // Start interval after alignment
+    }, secondsUntilNextMinute * 1000);
+  }
+// Start the process
 alignToRealTime();
 
 
