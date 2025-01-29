@@ -317,6 +317,7 @@ function runAtInterval() {
     
     // Call the API
     fetchSpinValueFromApi();
+  }
 }
 
 

@@ -236,3 +236,34 @@ footer p{
   text-align: center;
 
 }
+.recordTable {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.recordTable::-webkit-scrollbar {
+width: 6px;
+}
+
+.recordTable::-webkit-scrollbar-track {
+background: #f1f1f1; 
+}
+
+.recordTable::-webkit-scrollbar-thumb {
+background: #d58cff; 
+}
+
+.recordTable::-webkit-scrollbar-thumb:hover {
+background: #8b35bc; 
+}
+@media screen and (max-width: 768px) {
+  footer {
+    position:relative;
+  }
+      .infoSection {
+        width: 100%;
+        margin-top: 5px;
+    }
+  footer p{
+    font-size:11px
+  }
+}
