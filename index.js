@@ -273,7 +273,7 @@ async function RunInBackend(UserSetValue) {
     const response = await axios.post(apiEndpoint, payload);
     console.log(`API Response at ${localTime} ${port}:`, response.data);
   } catch (error) {
-    console.error(`Error calling API at ${localTime}:`, error.message);
+    console.error(`Error calling API at ${localTime} ${port}:`, error.message);
   }
 }
 
@@ -281,7 +281,7 @@ async function RunInBackend(UserSetValue) {
 function runAtInterval() {
   const currentTime = new Date();
   const minutes = currentTime.getMinutes();
-  const targetTimes = [0,30,20,40,50]; // Define target times
+  const targetTimes = [0,30]; // Define target times
 
   if (targetTimes.includes(minutes)) {
     console.log(`API called at ${currentTime.toLocaleTimeString()}`);
