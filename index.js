@@ -309,7 +309,7 @@ async function RunInBackend(UserSetValue) {
 function runAtInterval() {
   const currentTime = new Date();
   const minutes = currentTime.getMinutes();
-  const targetTimes = [0,30,10,40,50,20]; // Define target times
+  const targetTimes = [0,30]; // Define target times
 
   if (targetTimes.includes(minutes) && lastExecutedMinute !== minutes) {
     lastExecutedMinute = minutes; // Update last executed time
