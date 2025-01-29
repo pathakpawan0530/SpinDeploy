@@ -305,6 +305,7 @@ async function RunInBackend(UserSetValue) {
   }
 }
 
+let lastExecutedMinute = null; // Store last executed time
 
 function runAtInterval() {
   const currentTime = new Date();
