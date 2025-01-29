@@ -64,11 +64,17 @@ app.get('/api/spinValueUserSet', async (req, res) => {
     const intervalStart = new Date(currentTime.setMinutes(minutes - (minutes % 30), 0, 0)); // Example: for 9:43, sets to 9:30
     const intervalEnd = new Date(intervalStart.getTime() + 30 * 60 * 1000); // Example: 9:30 to 10:00
     
-  const spinValues = await SpinModelUserSet.find({
+  var spinValues = await SpinModelUserSet.find({
     timestamp: { $gte: intervalStart, $lt: intervalEnd }
   }).sort({ timestamp: -1 }); // Sort by latest timestamp
+  if(spinValues.length>0){
+    res.json(spinValues);  // Send all records as the response
 
-  res.json(spinValues);  // Send all records as the response
+  }else{
+    spinValues=[];
+    res.json(spinValues);  // Send all records as the response
+
+  }
   } catch (error) {
     res.status(500).send({message:'Error while fetching.'});
   }
@@ -249,6 +255,7 @@ app.get('/api/LastTimeValueSpinned', async (req, res) => {
 
 // Function to call the API
 async function RunInBackend(UserSetValue) {
+  console.log(UserSetValue)
   const apiEndpoint = `http://localhost:${port}/api/spinValue`; // Adjust as needed
   const localTime = new Date().toLocaleTimeString('en-US', {
     hour: '2-digit',
