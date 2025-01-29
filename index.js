@@ -255,25 +255,46 @@ app.get('/api/LastTimeValueSpinned', async (req, res) => {
 
 // Function to call the API
 async function RunInBackend(UserSetValue) {
-  console.log(UserSetValue)
-  const apiEndpoint = `http://localhost:${port}/api/spinValue`; // Adjust as needed
-  const localTime = new Date().toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true, // Ensures AM/PM format
-    timeZone: 'Asia/Kolkata', // Replace with your local timezone if needed
-  });
-
-  const payload = {
-    value: UserSetValue!=0 ? UserSetValue: Math.floor(Math.random() * 10) + 1, // Random value between 1 and 10
-    interval: localTime, // HH:MM AM/PM format
-  };
+  console.log(UserSetValue);
+  const apiEndpoint = `http://localhost:${port}/api/spinValue`;
+  
+  // Get current time in UTC
+  const now = new Date();
+  
+  // Convert UTC to IST (Asia/Kolkata)
+  const options = { timeZone: "Asia/Kolkata", hour12: true, hour: "2-digit", minute: "2-digit" };
+  const localTime = now.toLocaleTimeString("en-US", options);
+  
+  // Get today's date in YYYY-MM-DD format (IST)
+  const todayDate = now.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
 
   try {
+    // Fetch existing records from DB
+    const checkExisting = await axios.get(`http://localhost:${port}/api/spinValue`);
+    
+    // Check if a record with the same date and interval exists
+    const existingSpin = checkExisting.data.find(spin => {
+      const spinDate = new Date(spin.timestamp)
+        .toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); // Convert DB timestamp (UTC) to IST date
+
+      return spin.interval === localTime && spinDate === todayDate;
+    });
+
+    if (existingSpin) {
+      console.log(`Skipping duplicate spin value for interval ${localTime} on ${todayDate}`);
+      return; // Stop execution if duplicate found
+    }
+
+    // Create payload
+    const payload = {
+      value: UserSetValue !== 0 ? UserSetValue : Math.floor(Math.random() * 10) + 1,
+      interval: localTime,  // HH:MM AM/PM format
+      timestamp: now.toISOString(), // Store original UTC timestamp
+    };
+
     const response = await axios.post(apiEndpoint, payload);
     console.log(`API Response at ${localTime} ${port}:`, response.data);
-  } 
-  catch (error) {
+  } catch (error) {
     if (error.response) {
       console.error(`Error calling API at ${localTime} ${port}:`, error.response.status, error.response.data);
     } else if (error.request) {
@@ -298,42 +319,50 @@ function runAtInterval() {
 }
 
 
+let isRunning = false; // Flag to prevent concurrent execution
+
 async function fetchSpinValueFromApi() {
+  if (isRunning) return; // Prevent running multiple times at the same time
+  isRunning = true;
+
   try {
-    const apiEndpoint = `http://localhost:${port}/api/spinValueUserSet`; // Adjust as needed
-    var response = await axios.get(apiEndpoint);
-    var spinValues = response.data; // ✅ Correct way to get JSON from axios response
+    const apiEndpoint = `http://localhost:${port}/api/spinValueUserSet`;
+    const response = await axios.get(apiEndpoint);
+    const spinValues = response.data;
 
     if (spinValues && spinValues.length > 0) {
-
-      const latestSpin = spinValues[0]; // The most recent spin value
+      const latestSpin = spinValues[0]; // Most recent spin value
       const spinValue = latestSpin.value;
-      console.log(spinValue)
-      RunInBackend(spinValue);
+      console.log(spinValue);
+      await RunInBackend(spinValue);
     } else {
-      RunInBackend(0);
+      await RunInBackend(0);
     }
   } catch (error) {
     console.error('Error fetching spin value:', error);
-    RunInBackend(0);
-
-
+    await RunInBackend(0);
+  } finally {
+    isRunning = false; // Reset flag after execution
   }
 }
 
 
-// Function to align the next interval at a real-time 30-minute mark
+let intervalStarted = false; // Prevent multiple intervals
+
 function alignToRealTime() {
+  if (intervalStarted) return; // Ensure only one interval is created
+  intervalStarted = true;
+
   const now = new Date();
-    const secondsUntilNextMinute = 60 - now.getSeconds(); // Calculate seconds to align with the next minute
-  
-    // Align to the next minute
-    setTimeout(() => {
-      setInterval(runAtInterval, 60000); // Start interval after alignment
-    }, secondsUntilNextMinute * 1000);
-  }
-// Start the process
-alignToRealTime();
+  const secondsUntilNextMinute = 60 - now.getSeconds();
+
+  setTimeout(() => {
+    setInterval(runAtInterval, 60000);
+  }, secondsUntilNextMinute * 1000);
+}
+
+alignToRealTime(); // Call it only once
+
 
 
 
