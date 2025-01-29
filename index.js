@@ -311,11 +311,12 @@ function runAtInterval() {
   const minutes = currentTime.getMinutes();
   const targetTimes = [0,30,10,40,50,20]; // Define target times
 
-  if (targetTimes.includes(minutes)) {
+  if (targetTimes.includes(minutes) && lastExecutedMinute !== minutes) {
+    lastExecutedMinute = minutes; // Update last executed time
     console.log(`API called at ${currentTime.toLocaleTimeString()}`);
+    
     // Call the API
     fetchSpinValueFromApi();
-  }
 }
 
 
