@@ -98,6 +98,10 @@ let pieColors = [
 ];
 
 
+function getFontSize() {
+  return window.innerWidth < 600 ? 14 : 24; // Adjust font size for mobile
+}
+
 let myChart = new Chart(wheel, {
   plugins: [ChartDataLabels],
   type: "pie",
@@ -112,6 +116,7 @@ let myChart = new Chart(wheel, {
   },
   options: {
     responsive: true,
+    maintainAspectRatio: false, // Allows better responsiveness
     animation: { duration: 0 },
     plugins: {
       tooltip: false,
@@ -119,10 +124,16 @@ let myChart = new Chart(wheel, {
       datalabels: {
         color: "#ffffff",
         formatter: (_, context) => context.chart.data.labels[context.dataIndex],
-        font: { size: 24 },
+        font: { size: getFontSize() }, // Set dynamic font size
       },
     },
   },
+});
+
+// Update font size on window resize
+window.addEventListener("resize", () => {
+  myChart.options.plugins.datalabels.font.size = getFontSize();
+  myChart.update();
 });
 
 
