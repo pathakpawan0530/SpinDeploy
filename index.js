@@ -59,26 +59,37 @@ app.get('/api/ValidUsers', async (req, res) => {
 app.get('/api/spinValueUserSet', async (req, res) => {
   try {
     const currentTime = new Date();
-    // Set to the start of the current 30-minute interval
-    const minutes = currentTime.getMinutes();
-    const intervalStart = new Date(currentTime.setMinutes(minutes - (minutes % 30), 0, 0)); // Example: for 9:43, sets to 9:30
-    const intervalEnd = new Date(intervalStart.getTime() + 30 * 60 * 1000); // Example: 9:30 to 10:00
+
+    // Get today's date at midnight to ensure same-day comparison
+    const todayStart = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), 0, 0, 0, 0);
     
-  var spinValues = await SpinModelUserSet.find({
-    timestamp: { $gte: intervalStart, $lte: intervalEnd }
-  }).sort({ timestamp: -1 }); // Sort by latest timestamp
-  if(spinValues.length>0){
-    res.json(spinValues);  // Send all records as the response
+    // Get the current minutes and adjust to the previous 30-minute interval
+    const minutes = currentTime.getMinutes();
+    const intervalStart = new Date(todayStart.getTime() + (Math.floor(minutes / 30) * 30 * 60 * 1000)); // 0:00, 0:30, 1:00, etc.
 
-  }else{
-    spinValues=[];
-    res.json(spinValues);  // Send all records as the response
+    // Adjust intervalStart to be 30 minutes before the current time if needed
+    const previousIntervalStart = new Date(intervalStart.getTime() - 30 * 60 * 1000); // 30 minutes before current interval
 
-  }
+    // Calculate the end of the interval (which is the same as the intervalStart for the next period)
+    const intervalEnd = new Date(previousIntervalStart.getTime() + 30 * 60 * 1000); // 30 minutes after the start of the previous interval
+
+    console.log("Fetching data from:", previousIntervalStart.toISOString(), "to", intervalEnd.toISOString());
+
+    // Query the database for records within this time range
+    const spinValues = await SpinModelUserSet.find({
+      timestamp: { $gte: previousIntervalStart, $lte: intervalEnd } // Include the 30-minute range before the current time
+    }).sort({ timestamp: -1 });
+
+    // Send response
+    res.json(spinValues.length > 0 ? spinValues : []);
+
   } catch (error) {
-    res.status(500).send({message:'Error while fetching.'});
+    console.error("Error fetching spin values:", error);
+    res.status(500).send({ message: 'Error while fetching.' });
   }
 });
+
+
 
 
 app.get('/api/spinValue', async (req, res) => {
