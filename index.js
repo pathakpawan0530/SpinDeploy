@@ -65,7 +65,7 @@ app.get('/api/spinValueUserSet', async (req, res) => {
     const intervalEnd = new Date(intervalStart.getTime() + 30 * 60 * 1000); // Example: 9:30 to 10:00
     
   var spinValues = await SpinModelUserSet.find({
-    timestamp: { $gte: intervalStart, $lt: intervalEnd }
+    timestamp: { $gte: intervalStart, $lte: intervalEnd }
   }).sort({ timestamp: -1 }); // Sort by latest timestamp
   if(spinValues.length>0){
     res.json(spinValues);  // Send all records as the response
