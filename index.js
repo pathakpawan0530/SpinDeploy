@@ -255,7 +255,7 @@ app.get('/api/LastTimeValueSpinned', async (req, res) => {
 
 // Function to call the API
 async function RunInBackend(UserSetValue) {
-  console.log(UserSetValue);
+  console.log(UserSetValue  + "Come in RunInBackend");
   const apiEndpoint = `http://localhost:${port}/api/spinValue`;
   
   // Get current time in UTC
@@ -329,17 +329,19 @@ async function fetchSpinValueFromApi() {
   isRunning = true;
 
   try {
-    const apiEndpoint = `http://localhost:${port}/api/spinValueUserSet`;
-    const response = await axios.get(apiEndpoint);
-    const spinValues = response.data;
+    let apiEndpoint = `http://localhost:${port}/api/spinValueUserSet`;
+    let response = await axios.get(apiEndpoint);
+    let spinValues = response.data;
+    console.log("ye aaya h from API" +  spinValues);
 
-    if (spinValues && spinValues.length > 0) {
-      const latestSpin = spinValues[0]; // Most recent spin value
-      const spinValue = latestSpin.value;
+    if (spinValues.length > 0) {
+      let latestSpin = spinValues[0]; // Most recent spin value
+      let spinValue = latestSpin.value;
       console.log(spinValue);
       await RunInBackend(spinValue);
     } else {
       await RunInBackend(0);
+      console.log("kch ni aaya from API")
     }
   } catch (error) {
     console.error('Error fetching spin value:', error);
