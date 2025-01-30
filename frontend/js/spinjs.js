@@ -99,7 +99,7 @@ let pieColors = [
 
 
 function getFontSize() {
-  return window.innerWidth < 600 ? 14 : 24; // Adjust font size for mobile
+  return window.innerWidth < 1200 ? 14 : 24; // Adjust font size for mobile
 }
 
 let myChart = new Chart(wheel, {
@@ -116,7 +116,8 @@ let myChart = new Chart(wheel, {
   },
   options: {
     responsive: true,
-    maintainAspectRatio: false, // Allows better responsiveness
+    maintainAspectRatio: true, // Ensures the pie chart stays circular
+    aspectRatio: 1, // Forces a 1:1 ratio for a perfect circle
     animation: { duration: 0 },
     plugins: {
       tooltip: false,
@@ -127,7 +128,8 @@ let myChart = new Chart(wheel, {
         font: { size: getFontSize() }, // Set dynamic font size
       },
     },
-  },
+  }
+  
 });
 
 // Update font size on window resize
