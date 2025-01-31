@@ -100,61 +100,54 @@ app.get('/api/spinValue', async (req, res) => {
 
 app.post('/api/spinValue', async (req, res) => {
   const { value, interval } = req.body;
+
   // Validate the value range
   if (value < 1 || value > 10) {
-    return res.status(400).send({
-      error: 'Please provide a value between 1 and 10..'
-    });
+    return res.status(400).json({ error: 'Please provide a value between 1 and 10.' });
   }
 
+  // Validate interval format (HH:MM AM/PM)
   const intervalRegex = /^\d{1,2}:(00|10|20|30|40|50)\s(?:AM|PM)$/;
   if (!intervalRegex.test(interval)) {
     return res.status(400).json({
       error: 'Interval must be in HH:MM AM/PM format with MM as 00, 10, 20, 30, 40, or 50.'
-    });  }
+    });
+  }
 
   try {
-    // Get the current date in YYYY-MM-DD format
-    const today = new Date();
-    
-    // Create new instances to avoid mutating the 'today' object
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0)); // Start of the current day
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999)); // End of the current day
-    
-    // Reset the today object to prevent mutation in future use
-    today.setHours(12, 0, 0, 0);
+    // Get today's UTC date at midnight (00:00:00)
+    const todayUTC = new Date();
+    todayUTC.setUTCHours(0, 0, 0, 0);
 
- 
+    // End of today's UTC date (23:59:59)
+    const endOfDayUTC = new Date(todayUTC);
+    endOfDayUTC.setUTCHours(23, 59, 59, 999);
 
-    // Check if a record exists for the same interval within today's date
-    const existingRecord = await SpinModel.findOne({
-      interval,
-      timestamp: { $gte: startOfDay, $lte: endOfDay },
-    });
+    // Ensure timestamp is saved in UTC
+    const timestampUTC = new Date().toISOString(); // Always store timestamps in UTC
 
-    if (existingRecord) {
+    // **Atomic Upsert Operation to Prevent Duplicates**
+    const updatedSpin = await SpinModel.findOneAndUpdate(
+      {
+        interval,
+        timestamp: { $gte: todayUTC, $lte: endOfDayUTC } // Check today's interval in UTC
+      },
+      { $setOnInsert: { value, interval, timestamp: timestampUTC } }, // Insert only if new
+      { upsert: true, new: true, rawResult: true } // Ensure atomicity
+    );
+
+    // Check if a new document was inserted (avoids duplicate)
+    if (!updatedSpin.lastErrorObject.updatedExisting) {
+      return res.status(200).json({ statuscode: 200, message: 'Spin value saved successfully.' });
+    } else {
       return res.status(400).json({
         error: `Spin value for interval "${interval}" is already posted today.`
       });
-          }
-
-    // Save the spin value along with the timestamp
-    const newSpinValue = new SpinModel({
-      value,
-      interval,
-      timestamp: new Date(),
-    });
-
-    await newSpinValue.save();
-    console.log(newSpinValue);
-
-    res.status(200).json({ statuscode: 200, message: 'Spin value saved successfully.' });
+    }
   } catch (error) {
-    res.status(500).send(`Error saving spin value: ${error.message}`);
+    res.status(500).send({ message: `Error saving spin value: ${error.message}` });
   }
 });
-
-
 
 
 
