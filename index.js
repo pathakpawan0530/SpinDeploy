@@ -58,29 +58,25 @@ app.get('/api/ValidUsers', async (req, res) => {
 
 app.get('/api/spinValueUserSet', async (req, res) => {
   try {
-    const currentTime = new Date();
+    const nowUTC = new Date(new Date().toUTCString()); // Ensure UTC
+    const minutes = nowUTC.getMinutes();
 
-    // Get today's date at midnight to ensure same-day comparison
-    const todayStart = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), 0, 0, 0, 0);
+    // Round down to the nearest 30-minute interval
+    const intervalStart = new Date(nowUTC);
+    intervalStart.setMinutes(minutes - (minutes % 30), 0, 0);
+
+    // Previous 30-minute slot
+    const previousIntervalStart = new Date(intervalStart.getTime() - 30 * 60 * 1000);
     
-    // Get the current minutes and adjust to the previous 30-minute interval
-    const minutes = currentTime.getMinutes();
-    const intervalStart = new Date(todayStart.getTime() + (Math.floor(minutes / 30) * 30 * 60 * 1000)); // 0:00, 0:30, 1:00, etc.
-
-    // Adjust intervalStart to be 30 minutes before the current time if needed
-    const previousIntervalStart = new Date(intervalStart.getTime() - 30 * 60 * 1000); // 30 minutes before current interval
-
-    // Calculate the end of the interval (which is the same as the intervalStart for the next period)
-    const intervalEnd = new Date(previousIntervalStart.getTime() + 30 * 60 * 1000); // 30 minutes after the start of the previous interval
+    // Interval end (30 min after previousIntervalStart)
+    const intervalEnd = new Date(previousIntervalStart.getTime() + 30 * 60 * 1000);
 
     console.log("Fetching data from:", previousIntervalStart.toISOString(), "to", intervalEnd.toISOString());
 
-    // Query the database for records within this time range
     const spinValues = await SpinModelUserSet.find({
-      timestamp: { $gte: previousIntervalStart, $lte: intervalEnd } // Include the 30-minute range before the current time
+      timestamp: { $gte: previousIntervalStart, $lt: intervalEnd } // Correct range
     }).sort({ timestamp: -1 });
 
-    // Send response
     res.json(spinValues.length > 0 ? spinValues : []);
 
   } catch (error) {
