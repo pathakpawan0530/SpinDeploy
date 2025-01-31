@@ -74,7 +74,7 @@ app.get('/api/spinValueUserSet', async (req, res) => {
     console.log("Fetching data from:", previousIntervalStart.toISOString(), "to", intervalEnd.toISOString());
 
     const spinValues = await SpinModelUserSet.find({
-      timestamp: { $gte: previousIntervalStart, $lt: intervalEnd } // Correct range
+      timestamp: { $gte: previousIntervalStart, $lte: intervalEnd } // Correct range
     }).sort({ timestamp: -1 });
 
     res.json(spinValues.length > 0 ? spinValues : []);
